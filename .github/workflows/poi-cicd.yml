@@ -1,4 +1,4 @@
-name: Linux Container Node Workflow
+name: POI Service - CI/CD
 
 on: 
  push:
