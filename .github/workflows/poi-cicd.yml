@@ -6,9 +6,9 @@ on:
    - main
   paths: 
    - 'apis/poi/**'
- pull_request:
-  paths:
-   - 'apis/poi/**'
+ #pull_request:
+ # paths:
+ #  - 'apis/poi/**'
 
 
 jobs:
@@ -57,12 +57,12 @@ jobs:
 
     - name: Build and Push Docker Image
       run: |
-        docker build ./apis/poi/web -t openhacktdp1i383acr.azurecr.io/poi:${{ github.sha }}
-        docker push openhacktdp1i383acr.azurecr.io/poi:${{ github.sha }}     
+        docker build ./apis/poi/web -t openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}
+        docker push openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}     
 
     - name: Deploy to App Service using the ACR image
       uses: azure/webapps-deploy@v2
       with:
         app-name: 'openhacktdp1i383poi'
         publish-profile: ${{ secrets.AZURE_POIAPP_PUBLISH_PROFILE }}
-        images: 'openhacktdp1i383acr.azurecr.io/poi:${{ github.sha }}'
+        images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}'
