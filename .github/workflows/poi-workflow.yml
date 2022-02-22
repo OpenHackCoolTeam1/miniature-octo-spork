@@ -28,3 +28,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore ./apis/poi/
       - name: Unit Test
         run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~UnitTest" --logger "trx;LogFileName=UnitTestResults.trx" --results-directory  ./TestResults
+        if: failure()
+      - uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: "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"
