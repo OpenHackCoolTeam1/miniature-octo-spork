@@ -27,4 +27,9 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Unit Test
-        run: dotnet test --filter "FullyQualifiedName~UnitTest" --logger "trx;LogFileName=UnitTestResults.trx" --results-directory ./TestResults
+        run: dotnet test --filter "FullyQualifiedName~UnitTest" --logger "trx;LogFileName=UnitTestResults.trx" --results-directory ./TestResult
+        if: failure()
+      - uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: "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"
+ 
