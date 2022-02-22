@@ -8,10 +8,10 @@ name: Docker
 on: 
  push:
   paths: 
-   - 'apis/poi/**'
+   - 'api/poi/**'
  pull_request:
   paths:
-   - 'apis/poi/**'
+   - 'api/poi/**'
 
 env:
   # Use docker.io for Docker Hub if empty
