@@ -1,4 +1,4 @@
-# POI Service - test change
+# POI Service
 
 ## Overview
 
