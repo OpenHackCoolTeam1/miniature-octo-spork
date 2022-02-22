@@ -1,4 +1,4 @@
-# POI Service Test
+# POI Service
 
 ## Overview
 
