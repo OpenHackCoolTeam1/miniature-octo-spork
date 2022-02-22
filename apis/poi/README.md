@@ -21,7 +21,7 @@ It's still a valid command in certain scenarios where doing an explicit restore 
 dotnet build
 ```
 
-### Testing
+### Testing 2
 
 You can run the test in Visual Studio/VSCode or with the command line.
 
