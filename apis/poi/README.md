@@ -1,4 +1,4 @@
-# POI Service
+# POI Service - test change
 
 ## Overview
 
@@ -21,7 +21,7 @@ It's still a valid command in certain scenarios where doing an explicit restore 
 dotnet build
 ```
 
-### Testing 2
+### Testing
 
 You can run the test in Visual Studio/VSCode or with the command line.
 
