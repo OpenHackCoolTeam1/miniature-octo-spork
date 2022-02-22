@@ -46,3 +46,5 @@ It is useful but not required to have a basic knowledge of the following topics:
 ## Resources
 
 The provisioning of this environment for proctors can be found in the [aka.ms/OpenHackBYOS](https://aka.ms/OpenHackBYOS) Github repository under **devops** directory.
+
+test
