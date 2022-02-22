@@ -5,17 +5,13 @@ name: Docker
 # separate terms of service, privacy policy, and support
 # documentation.
 
-on:
-  schedule:
-    - cron: '43 0 * * *'
-  push:    
-    paths: 
-    - '/apis/poi/**'     
-    # Publish semver tags as releases.
-    # tags: [ 'v*.*.*' ]
-  pull_request:    
-    paths: 
-    - '/apis/poi/**'     
+on: 
+ push:
+  paths: 
+   - 'apis/poi/**'
+ pull_request:
+  paths:
+   - 'apis/poi/**'
 
 env:
   # Use docker.io for Docker Hub if empty
