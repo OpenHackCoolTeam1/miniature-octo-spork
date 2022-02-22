@@ -34,13 +34,16 @@ jobs:
       run: dotnet build --configuration Release --no-restore ./apis/poi/
     
     - name: Unit Test
+      id: UnitTest
       run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~UnitTest" --logger "trx;LogFileName=UnitTestResults.trx" --results-directory  ./TestResults
+      continue-on-error: true
     
-    - name: Create an Issue if the job fails
-      if: ${{ job.status == 'failure' }}
+    - name: Create an Issue if the job fails    
+      if: ${{ steps.UnitTest.outcome != 'success' }}
       uses: JasonEtco/create-an-issue@v2
       env:
        GITHUB_TOKEN: ${{ secrets.ADNAN_TOKEN}}
+       run: exit 1
     
     - name: Setup Docker and ACR environment
       uses: azure/docker-login@v1
