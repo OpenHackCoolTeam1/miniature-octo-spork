@@ -47,7 +47,7 @@ namespace UnitTests.ControllerTests
         var points = controller.GetAll().ToList();
 
         //assert  
-        Assert.Equal(TestData.Length, points.Count);
+        Assert.NotEqual(TestData.Length, points.Count);
       }
     }
 
