@@ -1,7 +1,7 @@
 name: User-Java-Service - CI/CD
 
 on: 
-# push:
+ push:
 #  branches: 
 #   - main
 #  paths: 
