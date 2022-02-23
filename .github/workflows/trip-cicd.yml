@@ -1,0 +1,65 @@
+name: Trips Service - CI/CD
+
+on: 
+ push:
+  branches: 
+   - main
+  paths: 
+   - 'apis/poi/**'
+ #pull_request:
+ # paths:
+ #  - 'apis/poi/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+  
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.16.1' # The Go version to download (if necessary) and use.
+      - run: go version
+    
+      - name: Install dependencies go
+        working-directory: ./apis/trips
+        run: go get
+    
+      - name: Build
+        working-directory: ./apis/trips
+        run: go build
+      
+      - name: Unit Test
+        id: UnitTest
+        working-directory: ./apis/trips
+        run: go test -v ./tripsgo -run Unit -coverprofile=trips_coverage.out -covermode=count
+        continue-on-error: true
+      
+      - name: Create an Issue if the job fails    
+        if: ${{ steps.UnitTest.outcome != 'success' }}
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADNAN_TOKEN}}
+        
+      - name: Exit On Failed Unit Test
+        if: ${{ steps.UnitTest.outcome != 'success' }}
+        run: exit 1
+    
+    - name: Setup Docker and ACR environment
+      uses: azure/docker-login@v1
+      with:
+        login-server: openhacktdp1i383acr.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build ./apis/trip -t openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}
+        docker push openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}     
+    - name: Deploy to App Service using the ACR image
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'openhacktdp1i383trips'
+        publish-profile: ${{ secrets.AZURE_POIAPP_PUBLISH_PROFILE }}
+        images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}'
