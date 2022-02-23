@@ -64,4 +64,4 @@ Test change
 ./gotestsum --format standard-verbose --junitfile integrationtest_results.xml -- ./tripsgo
 ```
 
-> **NOTE** This requires an actual database connection, so the required ENV variables need to be present.
+> **NOTE** This requires an actual database connection, so the required ENV variables need to be present..
