@@ -10,7 +10,7 @@ testResultsNunit.xml
 testResultsJunit.xml
 integrationtest_results.xml
 unittest_results.xml
-.vscode
+
 talisman_report
 talisman
 *.toml
