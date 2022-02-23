@@ -46,20 +46,20 @@ jobs:
         if: ${{ steps.UnitTest.outcome != 'success' }}
         run: exit 1
     
-    - name: Setup Docker and ACR environment
-      uses: azure/docker-login@v1
-      with:
-        login-server: openhacktdp1i383acr.azurecr.io
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Setup Docker and ACR environment
+        uses: azure/docker-login@v1
+        with:
+          login-server: openhacktdp1i383acr.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    - name: Build and Push Docker Image
-      run: |
-        docker build ./apis/trip -t openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}
-        docker push openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}     
-    - name: Deploy to App Service using the ACR image
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'openhacktdp1i383trips'
-        publish-profile: ${{ secrets.AZURE_POIAPP_PUBLISH_PROFILE }}
-        images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}'
+      - name: Build and Push Docker Image
+        run: |
+          docker build ./apis/trip -t openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}
+          docker push openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}     
+      - name: Deploy to App Service using the ACR image
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'openhacktdp1i383trips'
+          publish-profile: ${{ secrets.AZURE_POIAPP_PUBLISH_PROFILE }}
+          images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}'
