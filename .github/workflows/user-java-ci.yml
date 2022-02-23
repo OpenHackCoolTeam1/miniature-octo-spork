@@ -1,4 +1,4 @@
-name: User-Service - CI/CD
+name: User-Java-Service - CI/CD
 
 on: 
 # push:
