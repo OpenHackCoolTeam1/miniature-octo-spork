@@ -6,7 +6,7 @@ POI (Trip Points of Interest) - CRUD API written in .NET Core 3.1 for Points of 
 
 ## Build & Test
 
-### Restore dependencies
+### Restore dependencies 
 
 ```shell
 dotnet restore
