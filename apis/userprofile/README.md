@@ -18,7 +18,7 @@ To run the server, run:
 
 ```shell
 npm start
-```
+``` 
 
 ### To view the Swagger UI interface
 
