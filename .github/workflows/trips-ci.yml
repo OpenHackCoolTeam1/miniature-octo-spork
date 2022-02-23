@@ -27,11 +27,13 @@ jobs:
         run: go get
       
       - name: Build
-        run: go build ./apis/trips
+        working-directory: ./apis/trips
+        run: go build
       
       - name: Unit Test
         id: UnitTest
-        run: go test -v ./apis/trips/tripsgo -run Unit -coverprofile=trips_coverage.out -covermode=count
+        working-directory: ./apis/trips
+        run: go test -v ./tripsgo -run Unit -coverprofile=trips_coverage.out -covermode=count
         continue-on-error: true
       
       - name: Create an Issue if the job fails    
