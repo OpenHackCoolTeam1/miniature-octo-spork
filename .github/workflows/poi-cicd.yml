@@ -47,6 +47,10 @@ jobs:
     - name: Exit On Failed Unit Test
       if: ${{ steps.UnitTest.outcome != 'success' }}
       run: exit 1
+      
+    - name: Integration Test 
+      id: IntegrationTest
+      run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~IntegrationTests" --logger "trx;LogFileName=IntegrationTestResults.trx" --results-directory ./TestResults
     
     - name: Setup Docker and ACR environment
       uses: azure/docker-login@v1
