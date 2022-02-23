@@ -1,8 +1,6 @@
 name: user profile CI
 
 on:
-  push:
-    branches: [ main ]
  pull_request:
   paths:
    - 'apis/userprofile/**'
@@ -17,6 +15,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '12.x'
+          
       - name: Install dependencies
         run: npm install
         
@@ -29,13 +28,14 @@ jobs:
       - name: Run Unit Test
         id: UnitTest
         run: npm test
+        continue-on-error: true
             
       - name: Create an Issue if the job fails    
-      if: ${{ steps.UnitTest.outcome != 'success' }}
-      uses: JasonEtco/create-an-issue@v2
-      env:
-       GITHUB_TOKEN: ${{ secrets.ADNAN_TOKEN}}
+        if: ${{ steps.UnitTest.outcome != 'success' }}
+        uses: JasonEtco/create-an-issue@v2
+        env:
+         GITHUB_TOKEN: ${{ secrets.ADNAN_TOKEN}}
        
-    - name: Exit On Failed Unit Test
-      if: ${{ steps.UnitTest.outcome != 'success' }}
-      run: exit 1
+      - name: Exit On Failed Unit Test
+        if: ${{ steps.UnitTest.outcome != 'success' }}
+        run: exit 1
