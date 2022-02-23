@@ -4,7 +4,7 @@ on:
  push:
 #  branches: 
 #   - main
-paths: 
+  paths: 
    - 'apis/user-java/**'
  pull_request:
   paths:
