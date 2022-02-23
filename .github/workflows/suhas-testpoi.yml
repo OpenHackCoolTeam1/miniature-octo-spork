@@ -42,8 +42,9 @@ jobs:
         slot-name: staging
 
     - name: Check if the staging slot is healthy using cURL
+      continue-on-error: true
       run: |         
-       declare -i duration=1
+       declare -i duration=1 = "https://openhacktdp1i383poi-staging.azurewebsites.net/api/healthcheck/poi"
        declare hasUrl=""
        declare endpoint
 
@@ -109,7 +110,7 @@ jobs:
        
     - name: Run Polling.sh
       run: |
-         val = $(polling -i "http://openhacktdp1i383poi-staging.azurewebsites.net/api/healthcheck/poi")
+         val = $(polling -i "https://openhacktdp1i383poi-staging.azurewebsites.net/api/healthcheck/poi")
          echo $val
       
     
