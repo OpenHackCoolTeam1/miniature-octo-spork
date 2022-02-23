@@ -1,0 +1,47 @@
+name: Trips Service - CI/CD
+
+on: 
+# push:
+#  branches: 
+#   - main
+#  paths: 
+#   - 'apis/poi/**'
+ pull_request:
+  paths:
+   - 'apis/trips/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ['3.1.x']
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.13.1' # The Go version to download (if necessary) and use.
+      - run: go version
+    
+    - name: Install dependencies
+      run: go get ./apis/trips
+    
+    - name: Build
+      run: go build ./apis/trips/
+    
+    - name: Unit Test
+      id: UnitTest
+      run: go test -v ./apis/trips/tripsgo -run Unit -coverprofile=trips_coverage.out -covermode=count
+      continue-on-error: true
+    
+    - name: Create an Issue if the job fails    
+      if: ${{ steps.UnitTest.outcome != 'success' }}
+      uses: JasonEtco/create-an-issue@v2
+      env:
+       GITHUB_TOKEN: ${{ secrets.ADNAN_TOKEN}}
+       
+    - name: Exit On Failed Unit Test
+      if: ${{ steps.UnitTest.outcome != 'success' }}
+      run: exit 1
