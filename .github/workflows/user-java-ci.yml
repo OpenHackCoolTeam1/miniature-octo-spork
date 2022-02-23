@@ -21,12 +21,13 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '11'
-        distribution: 'temurin'
+        distribution: 'adopt'
         cache: maven
+    - run: mvn --batch-mode --update-snapshots verify
     - run: mkdir staging && cp target/*.jar staging
     - uses: actions/upload-artifact@v2
       with:
-        name: Package
+        name: package
         path: staging    
     - name: Build with Maven
       run: mvn -B package --file pom.xml
