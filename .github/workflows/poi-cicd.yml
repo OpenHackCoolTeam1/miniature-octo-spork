@@ -32,6 +32,12 @@ jobs:
     
     - name: Build
       run: dotnet build --configuration Release --no-restore ./apis/poi/
+      
+    - uses: Azure/get-keyvault-secrets@v1
+      with:
+        keyvault: "openhacktdp1i383kv" 
+        secrets: 'SQLDBNAME, SQLPASSWORD, SQLSERVER, SQLUSER'  # comma separated list of secret keys to fetch from key vault 
+      id: myGetSecretAction # ID for secrets that you will reference
     
     - name: Unit Test
       id: UnitTest
@@ -50,7 +56,13 @@ jobs:
       
     - name: Integration Test 
       id: IntegrationTest
-      run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~IntegrationTests" --logger "trx;LogFileName=IntegrationTestResults.trx" --results-directory ./TestResults
+      env:
+        SQLNAME: ${{ steps.myGetSecretAction.outputs.SQLDBNAME}}
+        SQLPASSWORD: ${{ steps.myGetSecretAction.outputs.SQLPASSWORD}}
+        SQLSERVER: ${{ steps.myGetSecretAction.outputs.SQLSERVER}}
+        SQLUSER: ${{ steps.myGetSecretAction.outputs.SQLUSER}}
+      run: echo env.SQLNAME
+      #run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~IntegrationTests" --logger "trx;LogFileName=IntegrationTestResults.trx" --results-directory ./TestResults
     
     - name: Setup Docker and ACR environment
       uses: azure/docker-login@v1
