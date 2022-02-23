@@ -55,11 +55,11 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           docker build ./apis/userprofile -t openhacktdp1i383acr.azurecr.io/devopsoh/api-userprofile:${{ github.sha }}
-          docker push openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}     
+          docker push openhacktdp1i383acr.azurecr.io/devopsoh/api-userprofile:${{ github.sha }}     
     
       - name: Deploy to App Service using the ACR image
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'openhacktdp1i383userprofile'
-          publish-profile: ${{ secrets.AZURE_POIAPP_PUBLISH_PROFILE }}
+          publish-profile: ${{ secrets.AZURE_USERPROFILEAPP_PUBLISH_PROFILE }}
           images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-userprofile:${{ github.sha }}'
