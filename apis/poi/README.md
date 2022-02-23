@@ -60,3 +60,4 @@ dotnet test --filter "FullyQualifiedName~IntegrationTests" --logger "trx;LogFile
 - [Run selective unit tests](https://docs.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit)
 - 
 - [Logging in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1)  
+ 
