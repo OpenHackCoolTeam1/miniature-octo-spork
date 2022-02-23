@@ -28,14 +28,8 @@ jobs:
       working-directory: ./apis/user-java
       run: mvn -B package --file pom.xml
 
-    - run: mvn --batch-mode --update-snapshots verify
-    - run: mkdir staging && cp target/*.jar staging
-    - uses: actions/upload-artifact@v2
-      with:
-        name: package
-        path: staging    
-
     - name: Unit Test
+      working-directory: ./apis/user-java
       id: UnitTest
       run: mvn test
       continue-on-error: true
