@@ -21,7 +21,7 @@ func TestExecuteQueryInvalidDriverReturnsErr(t *testing.T) {
 	_, err := ExecuteQuery(query)
 
 	//assert
-	assert.NotNil(t, err)
+	assert.NotNil(t, errs)
 }
 func TestExecuteQueryConnectionSuccess(t *testing.T) {
 	//act
