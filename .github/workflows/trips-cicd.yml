@@ -5,7 +5,7 @@ on:
   branches: 
    - main
   paths: 
-   - 'apis/poi/**'
+   - 'apis/trips/**'
  #pull_request:
  # paths:
  #  - 'apis/poi/**'
