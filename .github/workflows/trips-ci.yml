@@ -26,7 +26,7 @@ jobs:
         run: go get ./apis/trips
       
       - name: Build
-        run: go build ./apis/trips/
+        run: go build ./apis/trips
       
       - name: Unit Test
         id: UnitTest
