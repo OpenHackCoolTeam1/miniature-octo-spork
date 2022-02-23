@@ -21,10 +21,16 @@ jobs:
         
       - name: Start the Server
         run: npm start --prefix ./apis/userprofile/ &
+        
+      - name: Sleep for 10s
+        uses: juliangruber/sleep-action@v1
+        with:
+         time: 10s
             
       - name: Run Unit Test
         id: UnitTest
-        run: npm test -- -t ./apis/userprofile/
+        working-directory: ./apis/userprofile/
+        run: npm test
         continue-on-error: true
             
       - name: Create an Issue if the job fails    
