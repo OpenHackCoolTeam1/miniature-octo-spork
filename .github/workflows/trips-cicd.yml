@@ -56,7 +56,8 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           docker build ./apis/trip -t openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}
-          docker push openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}     
+          docker push openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}
+          
       - name: Deploy to App Service using the ACR image
         uses: azure/webapps-deploy@v2
         with:
