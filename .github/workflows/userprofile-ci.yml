@@ -17,7 +17,8 @@ jobs:
           node-version: '12.x'
           
       - name: Install dependencies
-        run: npm install
+        run: npm install --prefix ./apis/userprofile/
+        
         
       - name: Start the Server
         run: npm start --prefix ./apis/userprofile/
