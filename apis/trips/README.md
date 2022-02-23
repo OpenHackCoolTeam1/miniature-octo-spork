@@ -32,7 +32,7 @@ go test -v ./tripsgo -run Unit -coverprofile=trips_coverage.out -covermode=count
 ```
 
 To run unit tests and get coverage report and junit report use **gotestsum** tool, execute:
-Test change
+
 
 ```shell
 ./gotestsum --format standard-verbose --junitfile unittest_results.xml -- ./tripsgo -run Unit -coverprofile=unittest_coverage.out -covermode=count
