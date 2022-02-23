@@ -66,8 +66,8 @@ jobs:
         SQLPASSWORD: ${{ steps.myGetSecretAction.outputs.SQLPASSWORD}}
         SQLSERVER: ${{ steps.myGetSecretAction.outputs.SQLSERVER}}
         SQLUSER: ${{ steps.myGetSecretAction.outputs.SQLUSER}}
-      run: echo env.SQLNAME
-      #run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~IntegrationTests" --logger "trx;LogFileName=IntegrationTestResults.trx" --results-directory ./TestResults
+      #run: echo env.SQLNAME
+      run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~IntegrationTests" --logger "trx;LogFileName=IntegrationTestResults.trx" --results-directory ./TestResults
     
     - name: Setup Docker and ACR environment
       uses: azure/docker-login@v1
