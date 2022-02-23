@@ -42,7 +42,7 @@ jobs:
         slot-name: staging
 
     - name: Check if the staging slot is healthy using cURL
-         run:|
+      run: |
          CODE=`curl --location --request GET 'http://openhacktdp1i383poi-staging.azurewebsites.net/api/healthcheck/poi'`
          if [ $CODE!="200" ] 
          then
