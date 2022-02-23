@@ -50,8 +50,7 @@ jobs:
          echo "Status:" "$http_code" 
           if [ "$http_code" == "}200" ] 
           then
-            echo "SUCCESS"
-            break
+            echo "SUCCESS"            
           else
             echo "FAILURE"
           fi
