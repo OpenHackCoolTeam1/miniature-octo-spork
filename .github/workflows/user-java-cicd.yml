@@ -1,53 +1,49 @@
-name: POI Service - CI/CD
+name: User-Java-Service - CI/CD
 
 on: 
  push:
   branches: 
    - main
   paths: 
-   - 'apis/poi/**'
+   - 'apis/user-java/**'
  #pull_request:
  # paths:
- #  - 'apis/poi/**'
-
+ #  - 'apis/user-java/**'
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dotnet-version: ['3.1.x']
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
-      uses: actions/setup-dotnet@v1.7.2
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
       with:
-          dotnet-version: ${{ matrix.dotnet-version }}
-    
-    - name: Install dependencies
-      run: dotnet restore ./apis/poi
-    
-    - name: Build
-      run: dotnet build --configuration Release --no-restore ./apis/poi/
-    
+        java-version: '11'
+        distribution: 'adopt'
+        cache: maven
+
+    - name: Build with Maven
+      working-directory: ./apis/user-java
+      run: mvn -B package --file pom.xml
+
     - name: Unit Test
+      working-directory: ./apis/user-java
       id: UnitTest
-      run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~UnitTest" --logger "trx;LogFileName=UnitTestResults.trx" --results-directory  ./TestResults
+      run: mvn test
       continue-on-error: true
     
     - name: Create an Issue if the job fails    
       if: ${{ steps.UnitTest.outcome != 'success' }}
       uses: JasonEtco/create-an-issue@v2
       env:
-       GITHUB_TOKEN: ${{ secrets.ADNAN_TOKEN}}
-       
+         GITHUB_TOKEN: ${{ secrets.ADNAN_TOKEN}}
+    
     - name: Exit On Failed Unit Test
       if: ${{ steps.UnitTest.outcome != 'success' }}
       run: exit 1
-    
+
     - name: Setup Docker and ACR environment
       uses: azure/docker-login@v1
       with:
@@ -57,12 +53,12 @@ jobs:
 
     - name: Build and Push Docker Image
       run: |
-        docker build ./apis/poi/web -t openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}
-        docker push openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}     
+        docker build ./apis/user-java -t openhacktdp1i383acr.azurecr.io/devopsoh/api-user-java:${{ github.sha }}
+        docker push openhacktdp1i383acr.azurecr.io/devopsoh/api-user-java:${{ github.sha }}     
 
     - name: Deploy to App Service using the ACR image
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'openhacktdp1i383poi'
-        publish-profile: ${{ secrets.AZURE_POIAPP_PUBLISH_PROFILE }}
-        images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}'
+        app-name: 'openhacktdp1i383userjava'
+        publish-profile: ${{ secrets.AZURE_USERJAVAAPP_PUBLISH_PROFILE }}
+        images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-user-java:${{ github.sha }}'

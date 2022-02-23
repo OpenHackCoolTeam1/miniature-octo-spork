@@ -1,51 +1,45 @@
-name: User-Service - CI/CD
+name: User-Java-Service - CI/CD
 
 on: 
-# push:
-#  branches: 
-#   - main
-#  paths: 
-#   - 'apis/user-java/**'
+ # push:
+  #branches: 
+  # - main
+ # paths: 
+  # - 'apis/user-java/**'
  pull_request:
   paths:
    - 'apis/user-java/**'
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+        cache: maven
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-          cache: maven
+    - name: Build with Maven
+      working-directory: ./apis/user-java
+      run: mvn -B package --file pom.xml
 
-      - name: Build with Maven
-      - run: mvn --batch-mode --update-snapshots verify
-      - run: mkdir staging && cp target/*.jar staging
-      - uses: actions/upload-artifact@v2
-        with:
-          name: Package
-          path: staging
-
-      - name: Build the Package
-      - run: mvn package
-
-      - name: Unit Test
-        id: UnitTest
-        run: mvn test
-        continue-on-error: true
+    - name: Unit Test
+      working-directory: ./apis/user-java
+      id: UnitTest
+      run: mvn test
+      continue-on-error: true
     
-      - name: Create an Issue if the job fails    
-        if: ${{ steps.UnitTest.outcome != 'success' }}
-        uses: JasonEtco/create-an-issue@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.ADNAN_TOKEN}}
-       
-      - name: Exit On Failed Unit Test
-        if: ${{ steps.UnitTest.outcome != 'success' }}
-        run: exit 1
+    - name: Create an Issue if the job fails    
+      if: ${{ steps.UnitTest.outcome != 'success' }}
+      uses: JasonEtco/create-an-issue@v2
+      env:
+         GITHUB_TOKEN: ${{ secrets.ADNAN_TOKEN}}
+    
+    - name: Exit On Failed Unit Test
+      if: ${{ steps.UnitTest.outcome != 'success' }}
+      run: exit 1
