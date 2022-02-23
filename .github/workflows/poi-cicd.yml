@@ -66,3 +66,4 @@ jobs:
         app-name: 'openhacktdp1i383poi'
         publish-profile: ${{ secrets.AZURE_POIAPP_PUBLISH_PROFILE }}
         images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}'
+        slot-name: staging
