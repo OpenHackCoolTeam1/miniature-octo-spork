@@ -17,15 +17,11 @@ jobs:
           node-version: '12.x'
           
       - name: Install dependencies
-        run: npm install --prefix ./apis/userprofile/
-        
+        run: npm install --prefix ./apis/userprofile/        
         
       - name: Start the Server
-        run: npm start --prefix ./apis/userprofile/
-      
-      - name: Open the Browser
-        run: open http://localhost:8080/api/docs/user
-      
+        run: npm run build --prefix ./apis/userprofile/     
+            
       - name: Run Unit Test
         id: UnitTest
         run: npm test -- -t ./apis/userprofile/
