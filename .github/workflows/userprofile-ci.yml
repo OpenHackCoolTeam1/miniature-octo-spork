@@ -20,7 +20,7 @@ jobs:
         run: npm install --prefix ./apis/userprofile/        
         
       - name: Start the Server
-        run: npm --prefix ./apis/userprofile/ run build 
+        run: npm start &
             
       - name: Run Unit Test
         id: UnitTest
