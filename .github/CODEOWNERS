@@ -6,7 +6,7 @@
 # @global-owner1 and @global-owner2 will be requested for
 # review when someone opens a pull request.
 *       @suhasaraos
-*       @didibohorquez
+*       @catwang42
 
 # In this example, @apis owns any file in the `/apis`
 # directory in the root of your repository and any of its
