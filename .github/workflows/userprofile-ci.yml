@@ -20,14 +20,14 @@ jobs:
         run: npm install
         
       - name: Start the Server
-        run: npm start
+        run: npm start ./apis/userprofile/
       
       - name: Open the Browser
         run: open http://localhost:8080/api/docs/user
       
       - name: Run Unit Test
         id: UnitTest
-        run: npm test
+        run: npm test ./apis/userprofile/
         continue-on-error: true
             
       - name: Create an Issue if the job fails    
