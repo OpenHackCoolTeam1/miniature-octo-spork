@@ -23,7 +23,8 @@ jobs:
       - run: go version
     
       - name: Install dependencies go
-        run: go get -u ./apis/trips
+        working-directory: ./apis/trips
+        run: go get
       
       - name: Build
         run: go build ./apis/trips
