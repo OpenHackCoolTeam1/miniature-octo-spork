@@ -19,7 +19,7 @@ Change default port value in `src/main/resources/application.properties`
 
 2. Go into the project root directory that has the pom.xml and run `mvn package`
 
-## Run only the unit tests.
+## Run only the unit tests
 
 `mvn test`
 
