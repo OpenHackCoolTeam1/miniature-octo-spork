@@ -59,15 +59,15 @@ jobs:
       if: ${{ steps.UnitTest.outcome != 'success' }}
       run: exit 1
       
-    - name: Integration Test 
-      id: IntegrationTest
-      env:
-        SQL_NAME: ${{ steps.myGetSecretAction.outputs.SQLDBNAME}}
-        SQL_PASSWORD: ${{ steps.myGetSecretAction.outputs.SQLPASSWORD}}
-        SQL_SERVER: ${{ steps.myGetSecretAction.outputs.SQLSERVER}}
-        SQL_USER: ${{ steps.myGetSecretAction.outputs.SQLUSER}}
-      #run: echo env.SQLNAME
-      run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~IntegrationTests" --logger "trx;LogFileName=IntegrationTestResults.trx" --results-directory ./TestResults
+   # - name: Integration Test 
+   #   id: IntegrationTest
+   #   env:
+   #     SQL_NAME: ${{ steps.myGetSecretAction.outputs.SQLDBNAME}}
+   #     SQL_PASSWORD: ${{ steps.myGetSecretAction.outputs.SQLPASSWORD}}
+   #     SQL_SERVER: ${{ steps.myGetSecretAction.outputs.SQLSERVER}}
+   #     SQL_USER: ${{ steps.myGetSecretAction.outputs.SQLUSER}}
+   #   #run: echo env.SQLNAME
+   #   run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~IntegrationTests" --logger "trx;LogFileName=IntegrationTestResults.trx" --results-directory ./TestResults
     
     - name: Setup Docker and ACR environment
       uses: azure/docker-login@v1
