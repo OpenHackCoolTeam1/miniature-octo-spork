@@ -3,7 +3,7 @@ name: Suhas - CD to staging
 on: 
  push:
   branches: 
-   - 'catwang42/**'
+   - 'catwang42-patch-**'
  #pull_request:
  # paths:
  #  - 'apis/poi/**'
