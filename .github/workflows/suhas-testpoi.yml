@@ -48,8 +48,7 @@ jobs:
         images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}'
         slot-name: staging
 
-    - name: Check if the staging slot is healthy using cURL
-      continue-on-error: true
+    - name: Check if the staging slot is healthy using cURL      
       run: |         
        code=true
        for i in {1..10}       
