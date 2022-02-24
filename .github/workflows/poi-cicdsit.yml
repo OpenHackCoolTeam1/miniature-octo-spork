@@ -44,7 +44,7 @@ jobs:
     
     - name: Unit Test
       id: UnitTest
-      run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~UnitTest" --logger "trx;LogFileName=UnitTestResults.trx" --results-directory  ./TestResults
+      run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~UnitTest" --logger "trx;LogFileName=UnitTestResults.trx" --results-directory ./api/poi/tests/
       continue-on-error: true
     
     - name: Create an Issue if the job fails    
