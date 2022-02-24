@@ -35,7 +35,7 @@ This will run both the **Unit Tests** and the **Integration Tests**.
 
 #### Unit Tests
 
-To run only the **Unit Tests** use filters:
+To run only the **Unit Tests** use filters: 
 
 ```shell
 dotnet test --filter "FullyQualifiedName~UnitTest" --logger "trx;LogFileName=UnitTestResults.trx" --results-directory ./TestResults
