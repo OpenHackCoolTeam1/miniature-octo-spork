@@ -62,3 +62,33 @@ jobs:
         app-name: 'openhacktdp1i383userjava'
         publish-profile: ${{ secrets.AZURE_USERJAVAAPP_PUBLISH_PROFILE }}
         images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-user-java:${{ github.sha }}'
+          
+    - name: Check if the staging slot is healthy using curl      
+      run: |         
+        code=true
+        for i in {1..10}       
+           do
+             response=$(curl -m 5 -s -w "%{http_code}" "https://openhacktdp1i383userjava-staging.azurewebsites.net/api/healthcheck/user-java")
+             http_code=$(tail -n1 <<< "$response") 
+             echo "Status:" "$http_code" 
+              if [ "$http_code" == "200" ] 
+              then
+               break
+              else
+                code=false
+              fi
+              sleep 30
+           done
+        echo "$code"
+        if [ "$code" == false ] 
+        then
+         exit 1
+        fi     
+        
+    - name: Perform a slot wwap and STOP the Staging Slot for optimisation
+      uses: azure/CLI@v1
+      with:
+       azcliversion: 2.30.0
+       inlineScript: |          
+        az webapp deployment slot swap  -g openhacktdp1i383rg -n 'openhacktdp1i383userjava' --slot staging \--target-slot production
+        az webapp stop --name openhacktdp1i383userjava --resource-group openhacktdp1i383rg --slot staging
