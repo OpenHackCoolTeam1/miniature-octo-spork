@@ -23,7 +23,7 @@ dotnet build
 
 ### Testing
 
-You can run the test in Visual Studio/VSCode or with the command line.
+You can run the test in Visual Studio/VSCode or with the command line. 
 
 To use the command line just type:
 
