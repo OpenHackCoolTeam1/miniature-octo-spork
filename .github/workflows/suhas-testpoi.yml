@@ -57,11 +57,12 @@ jobs:
                code=false
              fi
              sleep 5
-          done 
-       if [ "$code"==false ] 
+          done
+       echo "$code"
+       if [ "$code" == false ] 
        then
         exit 1
-       fi    
+       fi
       
     
     - name: Performing Slot Swap
