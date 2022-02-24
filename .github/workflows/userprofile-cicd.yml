@@ -74,7 +74,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'openhacktdp1i383userprofile'
-          publish-profile: ${{ secrets.AZURE_USERPROFILEAPP_PUBLISH_PROFILE }}
+          publish-profile: ${{ secrets.AZURE_USERPROFILEAPP_PUBLISH_PROFILE_STAGING }}
           images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-userprofile:${{ github.sha }}'
           slot-name: staging
 
