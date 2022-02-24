@@ -3,10 +3,8 @@ name: POI Service - CI/CD
 on: 
  push:
   branches: 
-   - main
-  paths: 
-   - 'apis/poi/**'
- #pull_request:
+   - adnanakram82-patch-1
+  #pull_request:
  # paths:
  #  - 'apis/poi/**'
 
@@ -85,7 +83,14 @@ jobs:
         publish-profile: ${{ secrets.AZURE_POIAPP_PUBLISH_PROFILE_STAGING }}
         images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}'
         slot-name: staging
-        
+    - name: Integration Test 
+      id: IntegrationTest
+      env:
+        SQL_NAME: ${{ steps.myGetSecretAction.outputs.SQLDBNAME}}
+        SQL_PASSWORD: ${{ steps.myGetSecretAction.outputs.SQLPASSWORD}}
+        SQL_SERVER: ${{ steps.myGetSecretAction.outputs.SQLSERVER}}
+        SQL_USER: ${{ steps.myGetSecretAction.outputs.SQLUSER}}
+      run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~IntegrationTests" --logger "trx;LogFileName=IntegrationTestResults.trx" --results-directory        
     - name: Check if the staging slot is healthy using curl      
       run: |         
        code=true
