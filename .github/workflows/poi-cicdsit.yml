@@ -90,7 +90,7 @@ jobs:
         SQL_PASSWORD: ${{ steps.myGetSecretAction.outputs.SQLPASSWORD}}
         SQL_SERVER: ${{ steps.myGetSecretAction.outputs.SQLSERVER}}
         SQL_USER: ${{ steps.myGetSecretAction.outputs.SQLUSER}}
-      run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~IntegrationTests" --logger "trx;LogFileName=IntegrationTestResults.trx" --results-directory        
+      run: dotnet test --filter "FullyQualifiedName~IntegrationTests" --logger "trx;LogFileName=IntegrationTestResults.trx" --results-directory ./TestResults
     - name: Check if the staging slot is healthy using curl      
       run: |         
        code=true
