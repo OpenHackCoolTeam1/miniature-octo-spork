@@ -44,27 +44,31 @@ jobs:
     - name: Check if the staging slot is healthy using cURL
       continue-on-error: true
       run: |         
-       for i in {1..5}
-       do
-         response=$(curl -m 5 -s -w "%{http_code}" "https://openhacktdp1i383poi-staging.azurewebsites.net/api/healthcheck/poi")
-         http_code=$(tail -n1 <<< "$response") 
-         echo "Status:" "$http_code" 
-          if [ "$http_code" == "}200" ] 
-          then
-           break
-          else
-            echo "FAILURE"
-          fi
-          sleep 5
-       done 
+       code=true
+       for i in {1..10}       
+          do
+            response=$(curl -m 5 -s -w "%{http_code}" "https://openhacktdp1i383poi-staging.azurewebsites.net/api/healthcheck/poi")
+            http_code=$(tail -n1 <<< "$response") 
+            echo "Status:" "$http_code" 
+             if [ "$http_code" == "}200" ] 
+             then
+              break
+             else
+               code=false
+             fi
+             sleep 5
+          done 
+       if [ "$code"==false ] 
+       then
+        exit 1
+       fi    
       
     
     - name: Performing Slot Swap
       uses: azure/CLI@v1
       with:
         azcliversion: 2.30.0
-        inlineScript: |
-          az account show
+        inlineScript: |          
           az webapp deployment slot swap  -g openhacktdp1i383rg -n openhacktdp1i383poi --slot staging \--target-slot production
    
 
