@@ -86,32 +86,28 @@ jobs:
         images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}'
         slot-name: staging
         
-#     - name: Check if the staging slot is healthy using curl      
-#       run: |         
-#        code=true
-#        for i in {1..10}       
-#           do
-#             response=$(curl -m 5 -s -w "%{http_code}" "https://openhacktdp1i383poi-staging.azurewebsites.net/api/healthcheck/poi")
-#             http_code=$(tail -n1 <<< "$response") 
-#             echo "Status:" "$http_code" 
-#              if [ "$http_code" == "}200" ] 
-#              then
-#               break
-#              else
-#                code=false
-#              fi
-#              sleep 30
-#           done
-#        echo "$code"
-#        if [ "$code" == false ] 
-#        then
-#         exit 1
-#        fi      
-    - name: Check if the staging slot is healthy using bash script 
-      run: |
-        chmod +x ./github/workflows/healthcheck.sh
-      shell: bash
-    
+    - name: Check if the staging slot is healthy using curl      
+      run: |         
+       code=true
+       for i in {1..10}       
+          do
+            response=$(curl -m 5 -s -w "%{http_code}" "https://openhacktdp1i383poi-staging.azurewebsites.net/api/healthcheck/poi")
+            http_code=$(tail -n1 <<< "$response") 
+            echo "Status:" "$http_code" 
+             if [ "$http_code" == "}200" ] 
+             then
+              break
+             else
+               code=false
+             fi
+             sleep 30
+          done
+       echo "$code"
+       if [ "$code" == false ] 
+       then
+        exit 1
+       fi      
+
     - name: Perform a slot wwap and STOP the Staging Slot for optimisation
       uses: azure/CLI@v1
       with:
