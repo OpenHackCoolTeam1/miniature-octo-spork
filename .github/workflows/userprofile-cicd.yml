@@ -13,6 +13,7 @@ jobs:
    runs-on: ubuntu-latest
    steps:
       - uses: actions/checkout@v2
+      
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
@@ -43,8 +44,15 @@ jobs:
        
       - name: Exit On Failed Unit Test
         if: ${{ steps.UnitTest.outcome != 'success' }}
-        run: exit 1      
-        
+        run: exit 1
+
+      - name: Start Staging slot so we can deploy on it
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |                
+            az webapp start --name openhacktdp1i383userprofile --resource-group openhacktdp1i383rg --slot staging   
+
       - name: Setup Docker and ACR environment
         uses: azure/docker-login@v1
         with:
@@ -63,3 +71,34 @@ jobs:
           app-name: 'openhacktdp1i383userprofile'
           publish-profile: ${{ secrets.AZURE_USERPROFILEAPP_PUBLISH_PROFILE }}
           images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-userprofile:${{ github.sha }}'
+          slot-name: staging
+
+      - name: Check if the staging slot is healthy using curl      
+        run: |         
+         code=true
+         for i in {1..10}       
+            do
+              response=$(curl -m 5 -s -w "%{http_code}" "https://openhacktdp1i383userprofile-staging.azurewebsites.net/api/healthcheck/poi")
+              http_code=$(tail -n1 <<< "$response") 
+              echo "Status:" "$http_code" 
+               if [ "$http_code" == "}200" ] 
+               then
+                break
+               else
+                 code=false
+               fi
+               sleep 30
+            done
+         echo "$code"
+         if [ "$code" == false ] 
+         then
+          exit 1
+         fi      
+      - name: Perform a slot swap and STOP the Staging Slot for optimisation
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |          
+            az webapp deployment slot swap  -g openhacktdp1i383rg -n openhacktdp1i383userprofile --slot staging \--target-slot production
+            az webapp stop --name openhacktdp1i383userprofile --resource-group openhacktdp1i383rg --slot staging
+
