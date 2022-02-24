@@ -1,0 +1,118 @@
+name: POI Service - CI/CD
+
+on: 
+ push:
+  branches: 
+   - main
+  paths: 
+   - 'apis/poi/**'
+ #pull_request:
+ # paths:
+ #  - 'apis/poi/**'
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ['3.1.x']
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Log in with Azure
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+    
+    - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+    
+    - name: Install dependencies
+      run: dotnet restore ./apis/poi
+    
+    - name: Build
+      run: dotnet build --configuration Release --no-restore ./apis/poi/
+      
+    - uses: Azure/get-keyvault-secrets@v1
+      with:
+        keyvault: "openhacktdp1i383kv" 
+        secrets: 'SQLDBNAME, SQLPASSWORD, SQLSERVER, SQLUSER'  # comma separated list of secret keys to fetch from key vault 
+      id: myGetSecretAction # ID for secrets that you will reference
+    
+    - name: Unit Test
+      id: UnitTest
+      run: dotnet test ./apis/poi/ --filter "FullyQualifiedName~UnitTest" --logger "trx;LogFileName=UnitTestResults.trx" --results-directory  ./TestResults
+      continue-on-error: true
+    
+    - name: Create an Issue if the job fails    
+      if: ${{ steps.UnitTest.outcome != 'success' }}
+      uses: JasonEtco/create-an-issue@v2
+      env:
+       GITHUB_TOKEN: ${{ secrets.ADNAN_TOKEN}}
+       
+    - name: Exit On Failed Unit Test
+      if: ${{ steps.UnitTest.outcome != 'success' }}
+      run: exit 1
+      
+    - name: Start Staging slot so we can deploy on it
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |                
+          az webapp start --name openhacktdp1i383poi --resource-group openhacktdp1i383rg --slot staging   
+    
+    - name: Setup Docker and ACR environment
+      uses: azure/docker-login@v1
+      with:
+        login-server: openhacktdp1i383acr.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build ./apis/poi/web -t openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}
+        docker push openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}     
+
+    - name: Deploy to App Service using the ACR image
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'openhacktdp1i383poi'
+        publish-profile: ${{ secrets.AZURE_POIAPP_PUBLISH_PROFILE_STAGING }}
+        images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}'
+        slot-name: staging
+        
+    - name: Check if the staging slot is healthy using curl      
+      run: |         
+       code=true
+       for i in {1..10}       
+          do
+            response=$(curl -m 5 -s -w "%{http_code}" "https://openhacktdp1i383poi-staging.azurewebsites.net/api/healthcheck/poi")
+            http_code=$(tail -n1 <<< "$response") 
+            echo "Status:" "$http_code" 
+             if [ "$http_code" == "}200" ] 
+             then
+              break
+             else
+               code=false
+             fi
+             sleep 30
+          done
+       echo "$code"
+       if [ "$code" == false ] 
+       then
+        exit 1
+       fi      
+
+    - name: Perform a slot wwap and STOP the Staging Slot for optimisation
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |          
+          az webapp deployment slot swap  -g openhacktdp1i383rg -n openhacktdp1i383poi --slot staging \--target-slot production
+          az webapp stop --name openhacktdp1i383poi --resource-group openhacktdp1i383rg --slot staging
+
