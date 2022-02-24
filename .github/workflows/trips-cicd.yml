@@ -17,6 +17,11 @@ jobs:
   
     steps:
       - uses: actions/checkout@v2
+      - name: Log in with Azure
+        uses: azure/login@v1
+        with:
+          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+          
       - uses: actions/setup-go@v2
         with:
           go-version: '1.16.1' # The Go version to download (if necessary) and use.
@@ -29,6 +34,12 @@ jobs:
       - name: Build
         working-directory: ./apis/trips
         run: go build
+        
+      - uses: Azure/get-keyvault-secrets@v1
+        with:
+          keyvault: "openhacktdp1i383kv" 
+          secrets: 'SQLDBNAME, SQLPASSWORD, SQLSERVER, SQLUSER'  # comma separated list of secret keys to fetch from key vault 
+        id: myGetSecretAction # ID for secrets that you will reference
       
       - name: Unit Test
         id: UnitTest
@@ -45,6 +56,13 @@ jobs:
       - name: Exit On Failed Unit Test
         if: ${{ steps.UnitTest.outcome != 'success' }}
         run: exit 1
+        
+      - name: Start Staging slot so we can deploy on it
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |                
+            az webapp start --name openhacktdp1i383poi --resource-group openhacktdp1i383rg --slot staging
     
       - name: Setup Docker and ACR environment
         uses: azure/docker-login@v1
@@ -62,5 +80,36 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'openhacktdp1i383trips'
-          publish-profile: ${{ secrets.AZURE_TRIPSAPP_PUBLISH_PROFILE }}
+          publish-profile: ${{ secrets.AZURE_TRIPSAPP_PUBLISH_PROFILE_STAGING }}
           images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}'
+          slot-name: staging
+          
+      - name: Check if the staging slot is healthy using curl      
+        run: |         
+         code=true
+         for i in {1..10}       
+            do
+              response=$(curl -m 5 -s -w "%{http_code}" "https://openhacktdp1i383trips-staging.azurewebsites.net/api/healthcheck/trips")
+              http_code=$(tail -n1 <<< "$response") 
+              echo "Status:" "$http_code" 
+               if [ "$http_code" == "}200" ] 
+               then
+                break
+               else
+                 code=false
+               fi
+               sleep 30
+            done
+         echo "$code"
+         if [ "$code" == false ] 
+         then
+          exit 1
+         fi     
+         
+      - name: Perform a slot wwap and STOP the Staging Slot for optimisation
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |          
+            az webapp deployment slot swap  -g openhacktdp1i383rg -n openhacktdp1i383trips --slot staging \--target-slot production
+            az webapp stop --name openhacktdp1i383trips --resource-group openhacktdp1i383rg --slot staging
