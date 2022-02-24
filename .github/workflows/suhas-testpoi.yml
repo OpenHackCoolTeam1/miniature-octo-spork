@@ -47,11 +47,11 @@ jobs:
        for i in {1..5}
        do
          response=$(curl -m 5 -s -w "%{http_code}" "https://openhacktdp1i383poi-staging.azurewebsites.net/api/healthcheck/poi")
-         http_code=$(tail -n1 <<< "$response")  # get the last line
+         http_code=$(tail -n1 <<< "$response") 
          echo "Status:" "$http_code" 
           if [ "$http_code" == "}200" ] 
           then
-            echo "SUCCESS"
+           break
           else
             echo "FAILURE"
           fi
