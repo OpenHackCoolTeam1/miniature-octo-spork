@@ -21,6 +21,13 @@ jobs:
       uses: azure/login@v1
       with:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        
+    - name: Start Staging
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |                
+          az webapp start --name openhacktdp1i383poi --resource-group openhacktdp1i383rg --slot staging
     
     - name: Setup Docker and ACR environment
       uses: azure/docker-login@v1
@@ -62,14 +69,16 @@ jobs:
        if [ "$code" == false ] 
        then
         exit 1
-       fi
-      
+       fi      
     
-    - name: Performing Slot Swap
+    - name: Performing Slot Swap and Stop Staging Slot
       uses: azure/CLI@v1
       with:
         azcliversion: 2.30.0
         inlineScript: |          
           az webapp deployment slot swap  -g openhacktdp1i383rg -n openhacktdp1i383poi --slot staging \--target-slot production
+          az webapp stop --name openhacktdp1i383poi --resource-group openhacktdp1i383rg --slot staging
+
+
    
 
