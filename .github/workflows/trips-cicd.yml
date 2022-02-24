@@ -92,7 +92,7 @@ jobs:
               response=$(curl -m 5 -s -w "%{http_code}" "https://openhacktdp1i383trips-staging.azurewebsites.net/api/healthcheck/trips")
               http_code=$(tail -n1 <<< "$response") 
               echo "Status:" "$http_code" 
-               if [ "$http_code" == "}200" ] 
+               if [ "$http_code" == "200" ] 
                then
                 break
                else
