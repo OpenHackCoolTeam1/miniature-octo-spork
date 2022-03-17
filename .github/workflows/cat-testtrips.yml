@@ -1,0 +1,69 @@
+name: Suhas - CD to staging
+
+on: 
+ push:
+  branches: 
+   - 'catwang42-patch-**'
+ #pull_request:
+ # paths:
+ #  - 'apis/poi/**'
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Log in with Azure
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+    
+    - name: Setup Docker and ACR environment
+      uses: azure/docker-login@v1
+      with:
+        login-server: openhacktdp1i383acr.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}  
+     
+    - name: Build and Push Docker Image
+      run: |
+        docker build ./apis/trips -t openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}
+        docker push openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}     
+    
+    - name: Deploy to App Service using the ACR image
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'openhacktdp1i383trips'
+        publish-profile: ${{ secrets.AZURE_TRIPSAPP_PUBLISH_PROFILE }}
+        images: 'openhacktdp1i383acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}'
+        slot-name: staging
+
+    - name: Check if the staging slot is healthy using cURL
+      continue-on-error: true
+      run: |         
+       for i in {1..5}
+       do
+         response=$(curl -m 5 -s -w "%{http_code}" "https://openhacktdp1i383trips.azurewebsites.net/api/healthcheck/trips")
+         http_code=$(tail -n1 <<< "$response") 
+         echo "Status:" "$http_code" 
+          if [ "$http_code" == "}200" ] 
+          then
+           break
+          else
+            echo "FAILURE"
+          fi
+          sleep 5
+       done 
+      
+    
+    - name: Performing Slot Swap
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          az account show
+          az webapp deployment slot swap  -g openhacktdp1i383rg -n openhacktdp1i383trips --slot staging \--target-slot production
